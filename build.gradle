@@ -1,0 +1,86 @@
+import de.richsource.gradle.plugins.gwt.GwtSuperDev
+
+buildscript {
+    // The gwt-gradle-plugin can be found in jcenter repository
+    repositories {
+        jcenter()
+    }
+
+    // Add gwt-gradle-plugin to the dependencies of the build script
+    dependencies {
+        classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.6'
+    }
+}
+
+// Apply the plugins, jetty for server running superDev mode, war
+// plugin for building archive, the gwt and java plugins.
+apply plugin: 'jetty'
+apply plugin: 'war'
+apply plugin: 'gwt'
+apply plugin: 'java'
+
+// The source and target versions of Java bytecode. Set to 1.8 if you
+// want to follow this tutorials in Java 8 and to make it work.
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+// The repositories section says where to look for the dependencies.
+// Both GWT and WebGL4J are available in maven central repository.
+repositories {
+    mavenCentral()
+}
+
+// The GWT configuration section, will be used to configure the modules
+// to be compiled by GWT compiler.
+gwt {
+    // Increase the memory
+    minHeapSize = "512M"
+    maxHeapSize = "1024M"
+
+    // Set the GWT version
+    gwtVersion = '2.7.0'
+
+    // Set the modules to be compiled
+    modules 'com.shc.tutorial.webgl4j.client'
+    devModules 'com.shc.tutorial.webgl4j.client'
+
+    // SuperDevMode configuration
+    superDev {
+        noPrecompile = true
+    }
+}
+
+// This dependencies section belongs to the project, use this
+// to add in any dependencies that we are going to need for building
+// the application.
+dependencies {
+    providedCompile 'com.goharsha:webgl4j:0.2.7'
+    providedCompile 'com.google.gwt:gwt-user:2.7.0'
+    providedCompile 'com.google.gwt:gwt-servlet:2.7.0'
+}
+
+// Control what goes into the output archive. Also pack the resources
+// along with the HTML file and the compiled JS sources.
+war {
+    from sourceSets.main.resources
+}
+
+// A task to run a generated war file. This task depends on the war
+// plugin to generate a war file that contains the build output that
+// is ready to be run on the server.
+task run(type: JettyRunWar) {
+    dependsOn war
+    webApp = war.archivePath
+    daemon = true
+}
+
+// This task starts the super dev mode of GWT where you can run your
+// application in a local server. The changes you make to your java
+// source will be detected and the app will be re-compiled automatically.
+task superDev(type: GwtSuperDev) {
+    dependsOn run
+
+    doFirst {
+        gwt.modules = gwt.devModules
+    }
+}
