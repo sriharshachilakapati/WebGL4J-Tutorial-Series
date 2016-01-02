@@ -54,7 +54,7 @@ gwt {
 // to add in any dependencies that we are going to need for building
 // the application.
 dependencies {
-    providedCompile 'com.goharsha:webgl4j:0.2.7'
+    providedCompile 'com.goharsha:webgl4j:0.2.8'
     providedCompile 'com.google.gwt:gwt-user:2.7.0'
     providedCompile 'com.google.gwt:gwt-servlet:2.7.0'
 }
