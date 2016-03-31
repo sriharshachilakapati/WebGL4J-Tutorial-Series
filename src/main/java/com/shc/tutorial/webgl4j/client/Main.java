@@ -4,10 +4,10 @@ import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.StyleElement;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.shc.webgl4j.client.WebGL10;
 import com.shc.webgl4j.client.WebGLContext;
@@ -112,5 +112,97 @@ public class Main implements EntryPoint
 
         // Insert the CSS into head of the page
         Document.get().getHead().appendChild(style);
+
+        setupKeyEvents(canvas);
+        setupMouseEvents(canvas);
+    }
+
+    private void setupKeyEvents(Canvas canvas)
+    {
+        final Label keyPressLabel = new Label("No key pressed");
+        final Label keyDownLabel = new Label("No key down");
+        final Label keyUpLabel = new Label("No key up");
+
+        canvas.addKeyDownHandler(new KeyDownHandler()
+        {
+            @Override
+            public void onKeyDown(KeyDownEvent event)
+            {
+                keyDownLabel.setText("Key down: " + event.getNativeKeyCode());
+            }
+        });
+
+        canvas.addKeyUpHandler(new KeyUpHandler()
+        {
+            @Override
+            public void onKeyUp(KeyUpEvent event)
+            {
+                keyUpLabel.setText("Key up: " + event.getNativeKeyCode());
+            }
+        });
+
+        canvas.addKeyPressHandler(new KeyPressHandler()
+        {
+            @Override
+            public void onKeyPress(KeyPressEvent event)
+            {
+                keyPressLabel.setText("Key press: " + event.getCharCode());
+            }
+        });
+
+        RootPanel.get().add(keyPressLabel);
+        RootPanel.get().add(keyDownLabel);
+        RootPanel.get().add(keyUpLabel);
+    }
+
+    private void setupMouseEvents(Canvas canvas)
+    {
+        final Label mouseDownLabel = new Label("Mouse down: none");
+        final Label mouseUpLabel = new Label("Mouse up: none");
+        final Label mouseMoveLabel = new Label("Mouse x: 0, y: 0");
+        final Label mouseWheelLabel = new Label("Delta Scroll: 0");
+
+        canvas.addMouseDownHandler(new MouseDownHandler()
+        {
+            @Override
+            public void onMouseDown(MouseDownEvent event)
+            {
+                mouseDownLabel.setText("Mouse down: " + event.getNativeButton() +
+                                       " at (" + event.getClientX() + ", " + event.getClientY() + ")");
+            }
+        });
+
+        canvas.addMouseUpHandler(new MouseUpHandler()
+        {
+            @Override
+            public void onMouseUp(MouseUpEvent event)
+            {
+                mouseUpLabel.setText("Mouse up: " + event.getNativeButton() +
+                                       " at (" + event.getClientX() + ", " + event.getClientY() + ")");
+            }
+        });
+
+        canvas.addMouseMoveHandler(new MouseMoveHandler()
+        {
+            @Override
+            public void onMouseMove(MouseMoveEvent event)
+            {
+                mouseMoveLabel.setText("Mouse move: (" + event.getClientX() + ", " + event.getClientY() + ")");
+            }
+        });
+
+        canvas.addMouseWheelHandler(new MouseWheelHandler()
+        {
+            @Override
+            public void onMouseWheel(MouseWheelEvent event)
+            {
+                mouseWheelLabel.setText("Delta Scroll: " + event.getDeltaY());
+            }
+        });
+
+        RootPanel.get().add(mouseDownLabel);
+        RootPanel.get().add(mouseUpLabel);
+        RootPanel.get().add(mouseMoveLabel);
+        RootPanel.get().add(mouseWheelLabel);
     }
 }
